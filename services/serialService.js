@@ -5,20 +5,9 @@ const { GifUtil } = require('gifwrap');
 const Jimp = require('jimp');
 
 // Maps status keys (used in UI) to actual GIF filenames on disk
+// This is now mostly fallback/override as main.js sends the filename as the key
 const GIF_MAP = {
-  'available':      'available',
-  'busy':           'busy',
-  'Offline':        'Offline',
-  'In A Call':      'InACall',
-  'Be Right Back':  'BeRightBack',
-  'Break Time':     'BreakTime',
-  'Coffee Time':    'CoffeeTime',
-  'Just Busy':      'JustBusy',
-  'Leaving Now':    'LeavingNow',
-  'Lets Talk':      'LetsTalk',
-  'Out Of Office':  'OutOfOffice',
   'Back soon':      'BeBack',
-  'DND (Alt)':      'DoNotDisturb',
 };
 
 class SerialMonitor {
@@ -126,58 +115,70 @@ class SerialMonitor {
       return this.framesCache[status];
     }
 
-    const gifName = GIF_MAP[status] || status;
-    const gifPath = path.join(__dirname, '../gifs', `${gifName}.gif`);
-    if (!existsSync(gifPath)) {
-      throw new Error(`GIF file missing: ${gifPath}`);
+    const gifNameBase = GIF_MAP[status] || status;
+    const gifsDir = path.join(__dirname, '../gifs');
+    
+    // Find the actual file to handle .gif vs .GIF case differences
+    const files = require('fs').readdirSync(gifsDir);
+    const fileName = files.find(f => f.toLowerCase() === `${gifNameBase.toLowerCase()}.gif`);
+    
+    if (!fileName) {
+      throw new Error(`GIF file missing for status: ${status} (expected ${gifNameBase}.gif)`);
     }
 
+    const gifPath = path.join(gifsDir, fileName);
     const gif = await GifUtil.read(gifPath);
     const buffers = [];
 
     const WIDTH = 128;
     const HEIGHT = 160;
 
+    // We use a canvas of the GIF's logical size to handle frame offsets correctly
+    let canvas = new Jimp(gif.width, gif.height, 0x000000FF);
+
     const MAX_FRAMES = 45;
     const totalFrames = gif.frames.length;
     const step = Math.max(1, Math.ceil(totalFrames / MAX_FRAMES));
     
-    for (let i = 0; i < totalFrames; i += step) {
-      try {
+    for (let i = 0; i < totalFrames; i++) {
         const frame = gif.frames[i];
         const frameJimp = GifUtil.copyAsJimp(Jimp, frame);
         
-        // Create a solid black background to handle transparency
-        const jimpImage = new Jimp(WIDTH, HEIGHT, 0x000000FF);
-        
-        // Resize the frame to fit the display (simple approach without cover)
-        frameJimp.resize(WIDTH, HEIGHT, Jimp.RESIZE_BEZIER);
-        
-        // Composite the frame onto our solid background
-        jimpImage.composite(frameJimp, 0, 0);
+        // Handle transparency/offsets by compositing onto our logical canvas
+        // This ensures a 100x100 frame at offset (50,50) in a 480x480 GIF is placed correctly
+        canvas.composite(frameJimp, frame.xOffset, frame.yOffset);
 
-        const data = Buffer.alloc(WIDTH * HEIGHT * 2);
-        let offset = 0;
+        // Only process and send the frames dictated by our step/MAX_FRAMES
+        if (i % step === 0) {
+            try {
+                // Clone the current state of the canvas and scale it to fit the hardware display
+                // .cover ensures the screen is filled while maintaining aspect ratio
+                const displayImage = canvas.clone().cover(WIDTH, HEIGHT, Jimp.HORIZONTAL_ALIGN_CENTER | Jimp.VERTICAL_ALIGN_MIDDLE);
 
-        for (let y = 0; y < HEIGHT; y++) {
-          for (let x = 0; x < WIDTH; x++) {
-            const color = jimpImage.getPixelColor(x, y);
-            const rgba = Jimp.intToRGBA(color);
-            const r = rgba.r;
-            const g = rgba.g;
-            const b = rgba.b;
+                const data = Buffer.alloc(WIDTH * HEIGHT * 2);
+                let offset = 0;
 
-            const rgb565 = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
+                for (let y = 0; y < HEIGHT; y++) {
+                  for (let x = 0; x < WIDTH; x++) {
+                    const color = displayImage.getPixelColor(x, y);
+                    const rgba = Jimp.intToRGBA(color);
+                    const r = rgba.r;
+                    const g = rgba.g;
+                    const b = rgba.b;
 
-            data[offset++] = (rgb565 >> 8) & 0xFF;
-            data[offset++] = rgb565 & 0xFF;
-          }
+                    // Convert to RGB565 (2 bytes per pixel)
+                    const rgb565 = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
+
+                    data[offset++] = (rgb565 >> 8) & 0xFF;
+                    data[offset++] = rgb565 & 0xFF;
+                  }
+                }
+                buffers.push(data);
+            } catch (frameErr) {
+                console.error(`[loadGifFrames] Error processing frame ${i}:`, frameErr.message);
+                throw frameErr;
+            }
         }
-        buffers.push(data);
-      } catch (frameErr) {
-        console.error(`[loadGifFrames] Error processing frame ${i}:`, frameErr.message, frameErr.stack);
-        throw frameErr;
-      }
     }
 
     this.framesCache[status] = buffers;

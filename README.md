@@ -6,28 +6,21 @@ A premium desktop application (Electron) to securely send animated status frames
 
 Stofo Tag transforms GIF status images into RGB565 frames and delivers them to your display tag:
 
-- Hardware type: Stofo Tag Device
-- Color depth: RGB565 (16-bit)
-- Animate statuses like: Busy, Available, In A Call, etc.
-- Auto-detects device serial connection
-- **NEW**: Premium Dark Mode Glassmorphism UI
-- **NEW**: Custom Text Overlays burnt onto active GIFs
+- **Hardware type**: Stofo Tag Device (128x160 TFT)
+- **Automatic Library**: Dynamic scanning of the `/gifs` folder—supports both `.gif` and `.GIF` formats.
+- **Priority Sorting**: Puts "Online & Available" and "Busy" at the top, followed by an alphabetical grid.
+- **Auto-Revert Timers**: Set statuses to revert to "Available" after 15m, 30m, 45m, or 1h.
+- **Hardware Control**: Control screen brightness directly from the sidebar.
+- **Premium UI**: Dark mode glassmorphism with smooth transitions and responsive layouts.
+- **Background Integration**: Runs in the System Tray with quick-access controls.
 
-- **NEW**: Auto-Revert Timers (15m, 30m, 1h)
-- **NEW**: System Tray Background Integration
-- **NEW**: Hardware Screen Brightness Control
+## Project Structure
 
-## Project structure
-
-- `main/` – Electron main process & tray logic
-  - `main.js`
-  - `preload.js`
-- `renderer/` – UI Dashboard
-  - `index.html`, `renderer.js`, `styles.css`
-- `services/`
-  - `serialService.js` (Comms & Jimp frame processor)
-- `gifs/` – Default 14+ GIF files
-- `DOCUMENTATION.txt` – Full user manual & docs
+- `main/` – Electron main process, IPC handlers, and Tray management.
+- `renderer/` – Dashboard UI (HTML/JS/CSS).
+- `services/` – `serialService.js` (Real-time frame processing and USB comms).
+- `gifs/` – The animation library. Just drop any `.gif` file here to include it.
+- `DOCUMENTATION.txt` – Detailed project manual.
 
 ## Setup
 
@@ -41,11 +34,10 @@ npm start
 | Command | What it does |
 |---|---|
 | `npm start` | Launch the Electron dashboard (development) |
-| `npm run preprocess` | Extract GIF frames from `/gifs` → convert to RGB565 `.bin` files in `/frames` |
-| `npm run watch-ports` | Debug tool: polls & lists available COM ports every 2 seconds |
-| `npm run build-win` | Build a Windows NSIS installer `.exe` → output in `/dist` |
-| `npm run dist` | Full release pipeline: `preprocess` → `build-win` in one command |
+| `npm run build-win` | Package the app into a Windows installer (`/dist`) |
+| `npm run dist` | Full release pipeline for Windows systems |
 
-> **Note:** Run `npm run preprocess` once after adding or changing any GIF files in `/gifs`, before building.
+> **Pro Tip:** When you add a new GIF to the `/gifs` folder, just restart the app and it will automatically appear in the dashboard grid with a formatted label!
+
 
 

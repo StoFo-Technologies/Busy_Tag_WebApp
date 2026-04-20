@@ -105,16 +105,25 @@ app.whenReady().then(() => {
     const gifsDir = path.join(__dirname, '../gifs');
     try {
       const files = fs.readdirSync(gifsDir);
-      return files
-        .filter(f => f.toLowerCase().endsWith('.gif'))
+      const gifList = files
+        .filter(f => f.toLowerCase().endsWith('.gif') && f.toLowerCase() !== 'berightback.gif')
         .map(f => {
           const name = f.replace(/\.gif$/i, '');
-          // Basic label formatting: CamelCase or kebab-case to Space Case
-          let label = name
+
+          const LABEL_OVERRIDES = {
+            'ChillOut': 'Time To Chill',
+            'BeBack': 'Back Soon',
+            'available': 'Online & Available',
+            'busy': 'Busy / Working',
+            'SeeYaa': 'See Ya!',
+            'SnackTime': 'Snack Break',
+            'DoNotDisturb': 'Do Not Disturb'
+          };
+
+          let label = LABEL_OVERRIDES[name] || name
             .replace(/([A-Z])/g, ' $1')
             .replace(/[_-]/g, ' ')
             .trim();
-          // Title Case
           label = label.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
           return {
@@ -123,6 +132,27 @@ app.whenReady().then(() => {
             gif: `../gifs/${f}`
           };
         });
+
+      // Sort alphabetically
+      gifList.sort((a, b) => a.label.localeCompare(b.label));
+
+      // Re-order to put Available and Busy at the top
+      const priority = ['available', 'busy'];
+      const prioritized = [];
+      const others = [];
+
+      gifList.forEach(item => {
+        if (priority.includes(item.key)) {
+          prioritized.push(item);
+        } else {
+          others.push(item);
+        }
+      });
+
+      // Special sort for priority
+      prioritized.sort((a, b) => priority.indexOf(a.key) - priority.indexOf(b.key));
+
+      return [...prioritized, ...others];
     } catch (e) {
       console.error('Failed to read gifs dir:', e);
       return [];
