@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' file: data: *;">
+  <title>Stofo Tag | Animate Your Presence</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="app-layout">
+
+    <aside class="sidebar">
+      <div class="sidebar-header"
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+        <img src="../public/STOFO LOGO.png" alt="STOFO Logo" class="brand-logo" />
+        <div class="theme-toggle">
+          <input type="checkbox" class="checkbox" id="theme-checkbox">
+          <label for="theme-checkbox" class="checkbox-label">
+            <span class="ball"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="sidebar-controls">
+          <div class="control-group">
+          <label for="timer-select">Auto-Revert Timer:</label>
+          <select id="timer-select">
+            <option value="0">Forever</option>
+            <option value="15">15 Minutes</option>
+            <option value="30">30 Minutes</option>
+            <option value="45">45 Minutes</option>
+            <option value="60">1 Hour</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label for="brightness-slider">Hardware Brightness:</label>
+          <input type="range" id="brightness-slider" min="10" max="255" value="200" />
+        </div>
+
+
+      </div>
+
+      <div class="sidebar-footer">
+        <!-- Badge moved to header -->
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="page-header">
+        <div class="header-container">
+          <div class="header-main">
+            <div class="header-titles">
+              <h1>Your Status, Animated.</h1>
+              <p class="subtitle">Personalize your setup with dynamic presence cards.</p>
+            </div>
+            <div id="connection-badge" class="connection-badge disconnected">
+              <span class="dot"></span>
+              <span id="badge-text">Not connected</span>
+            </div>
+          </div>
+
+          <div id="operation-status" class="operation-status">
+            <span id="status-text"></span>
+            <div id="loading-spinner" class="spinner hidden"></div>
+          </div>
+        </div>
+      </header>
+
+      <section class="card-grid" id="gif-grid"></section>
+    </main>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+
+</html>

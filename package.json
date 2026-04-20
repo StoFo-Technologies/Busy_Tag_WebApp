@@ -1,0 +1,54 @@
+{
+  "name": "stofotag-dashboard",
+  "version": "0.1.0",
+  "description": "Electron Stofo Tag Dashboard for ESP32 TFT GIF control",
+  "main": "main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build-win": "electron-builder --win",
+    "dist": "npm run build-win"
+  },
+  "keywords": [
+    "electron",
+    "esp32",
+    "serialport",
+    "gif",
+    "dashboard"
+  ],
+  "author": "",
+  "dependencies": {
+    "gif-frames": "^1.0.1",
+    "gifwrap": "^0.10.1",
+    "jimp": "^0.22.10",
+    "serialport": "^13.0.0"
+  },
+  "devDependencies": {
+    "electron": "^41.1.1",
+    "electron-builder": "^26.8.1"
+  },
+  "build": {
+    "appId": "com.stofotag",
+    "productName": "Stofo Tag",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main/**/*",
+      "renderer/**/*",
+      "services/**/*",
+      "gifs/**/*",
+      "public/**/*",
+      "build/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}

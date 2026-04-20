@@ -1,0 +1,136 @@
+================================================================================
+                        STOFO TAG DASHBOARD
+                    Electron Application Documentation
+================================================================================
+
+PROJECT OVERVIEW
+================================================================================
+Stofo Tag Dashboard is a premium Windows desktop application built with 
+Electron that allows you to cleanly control your hardware tag display 
+via a background USB serial connection.
+
+The app displays GIF animations mapped to unique work states and sends 
+them dynamically to the Tag display. The app uses a state-of-the-art 
+dark mode interface equipped with ambient glassmorphism and runs 
+seamlessly in the background (System Tray).
+
+KEY FEATURES:
+- Custom Hardware Sync: Connect to Stofo Tag via USB natively.
+- Animated Library: Send over 14 high-quality preloaded GIFs.
+
+- Custom Text Overlay: Burn personal messages dynamically onto the GIF.
+- Auto-Revert Timers: Set hardware configurations to clear after 15m/30m/1h.
+- Brightness Control: Command the hardware screen brightness directly from UI.
+- Background System Tray: Right-click quick toggles from your Windows taskbar.
+- Real-time connection feedback and dynamic desktop notifications.
+
+================================================================================
+HOW TO RUN THE APP
+================================================================================
+
+STEP 1: Install Dependencies
+  Open PowerShell in the project directory and run:
+  
+  npm install
+  
+STEP 2: Start the Application
+  npm start
+  
+  The app window will securely open.
+  
+STEP 3: Connect Hardware Tag
+  - Connect your device via USB cable.
+  - The app's background service will detect it automatically.
+  - Professional UI Badges will sync to "Connected".
+  
+STEP 4: Select a Status
+  Select any GIF card to beam the animation physically to your device. 
+
+================================================================================
+PROJECT STRUCTURE
+================================================================================
+
+main/
+  ├─ main.js          → Main Electron process (System Tray, serial, IPC)
+  └─ preload.js       → Security bridge exposing APIs natively
+
+renderer/
+  ├─ index.html       → Layout (Sidebar & Matrix)
+  ├─ renderer.js      → UI click bindings and logic execution
+  └─ styles.css       → High-end dynamic CSS with mesh gradients
+
+services/
+  └─ serialService.js → Comms processing, Jimp text-renderer, AT Commands
+
+gifs/                 → Original internal GIF media sources
+
+package.json          → Engine and metadata config
+
+================================================================================
+AVAILABLE COMMANDS
+================================================================================
+
+npm start
+  → Launches the Electron dashboard window locally.
+  → Use this every time you want to run the app during development.
+
+npm run preprocess
+  → Runs scripts/preprocessFrames.js
+  → Extracts GIF frames from the /gifs folder, converts them to
+    RGB565 binary format (.bin files), and saves them into /frames/<status-key>/
+  → Target display: ST7735 1.8" TFT (128x160 pixels, 16-bit color)
+  → Each frame = 40,960 bytes (128 × 160 × 2 bytes)
+  → Run this ONCE after adding or replacing any GIF files in /gifs,
+    or before running a production build (npm run dist handles this automatically).
+
+npm run watch-ports
+  → Runs scripts/portWatcher.js
+  → Continuously polls and lists all available Windows COM ports every 2 seconds.
+  → Use this as a debug tool to verify your ESP32/device is visible to the OS
+    before launching the main app.
+  → Run in a separate terminal: npm run watch-ports
+
+npm run build-win
+  → Packages the app using electron-builder into a Windows NSIS installer (.exe).
+  → Output is saved to the /dist folder.
+  → Use this to create a distributable installer for end users.
+
+npm run dist
+  → Full production pipeline: runs preprocess THEN build-win in sequence.
+  → Equivalent to: npm run preprocess && npm run build-win
+  → Use this when you are ready to ship a new release build.
+
+================================================================================
+SECURITY NOTES
+================================================================================
+
+✓ Content Security Policy (CSP) firmly locks layout contexts.
+✓ Node Integration disabled strictly in UI.
+✓ Sandboxed backend.
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+App won't start:
+  → Make sure `npm install` completed successfully.
+  
+Device not detected:
+  → Check USB cable pins / verify hardware.
+  → Verify Windows USB serial COM drivers.
+  
+Hardware Screen is Dark:
+  → Ensure the Brightness slider in the left sidebar isn't tracking at 0.
+
+================================================================================
+VERSION INFORMATION
+================================================================================
+
+App: Stofo Tag Sync
+Version: 0.1.0
+Environment: Windows 7+ Compatible
+UI Design: Stofo UI v2 (Dark Glass)
+
+================================================================================
+END OF DOCUMENTATION
+================================================================================
