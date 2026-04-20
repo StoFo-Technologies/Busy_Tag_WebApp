@@ -111,16 +111,16 @@ app.whenReady().then(() => {
           const name = f.replace(/\.gif$/i, '');
 
           const LABEL_OVERRIDES = {
-            'ChillOut': 'Time To Chill',
-            'BeBack': 'Back Soon',
+            'chillout': 'Time To Chill',
+            'beback': 'Back Soon',
             'available': 'Online & Available',
             'busy': 'Busy / Working',
-            'SeeYaa': 'See Ya!',
-            'SnackTime': 'Snack Break',
-            'DoNotDisturb': 'Do Not Disturb'
+            'seeyaa': 'See Ya!',
+            'snacktime': 'Snack Break',
+            'donotdisturb': 'Do Not Disturb'
           };
 
-          let label = LABEL_OVERRIDES[name] || name
+          let label = LABEL_OVERRIDES[name.toLowerCase()] || name
             .replace(/([A-Z])/g, ' $1')
             .replace(/[_-]/g, ' ')
             .trim();
@@ -142,7 +142,7 @@ app.whenReady().then(() => {
       const others = [];
 
       gifList.forEach(item => {
-        if (priority.includes(item.key)) {
+        if (priority.includes(item.key.toLowerCase())) {
           prioritized.push(item);
         } else {
           others.push(item);
