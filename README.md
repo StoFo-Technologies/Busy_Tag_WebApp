@@ -1,12 +1,12 @@
-# Stofo Tag
+# StoFo Dashboard
 
 A premium desktop application (Electron) to securely send animated status frames to your hardware display module via USB/serial.
 
 ## Overview
 
-Stofo Tag transforms GIF status images into RGB565 frames and delivers them to your display tag:
+StoFo Dashboard transforms GIF status images into RGB565 frames and delivers them to your display module:
 
-- **Hardware type**: Stofo Tag Device (128x160 TFT)
+- **Hardware type**: StoFo Device (128x160 TFT)
 - **Automatic Library**: Dynamic scanning of the `/gifs` folder—supports both `.gif` and `.GIF` formats.
 - **Priority Sorting**: Puts "Online & Available" and "Busy" at the top, followed by an alphabetical grid.
 - **Auto-Revert Timers**: Set statuses to revert to "Available" after 15m, 30m, 45m, or 1h.
@@ -38,6 +38,5 @@ npm start
 | `npm run dist` | Full release pipeline for Windows systems |
 
 > **Pro Tip:** When you add a new GIF to the `/gifs` folder, just restart the app and it will automatically appear in the dashboard grid with a formatted label!
-
-
-
+---
+© 2026 StoFo Technologies. All rights reserved.

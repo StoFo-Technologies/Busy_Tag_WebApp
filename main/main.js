@@ -79,10 +79,10 @@ app.whenReady().then(() => {
   monitor = new SerialMonitor({
     onConnect: (portInfo) => {
       mainWindow.webContents.send('device-status', { connected: true, port: portInfo.path });
-      notify('Device Connected', 'Stofo Tag connected via USB: ' + portInfo.path);
+      notify('Device Connected', 'StoFo device connected via USB: ' + portInfo.path);
     }, onDisconnect: (portInfo) => {
       mainWindow.webContents.send('device-status', { connected: false, port: null });
-      notify('Device Disconnected', 'Stofo Tag disconnected');
+      notify('Device Disconnected', 'StoFo device disconnected');
     }, onError: (errorMessage) => {
       mainWindow.webContents.send('device-error', errorMessage);
     }
@@ -175,7 +175,7 @@ app.whenReady().then(() => {
     { type: 'separator' },
     { label: 'Quit App', click: () => { app.isQuitting = true; app.quit(); } }
   ]);
-  tray.setToolTip('Stofo Tag');
+  tray.setToolTip('StoFo Dashboard');
   tray.setContextMenu(contextMenu);
   tray.on('click', () => {
     mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();

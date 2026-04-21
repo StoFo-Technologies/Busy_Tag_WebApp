@@ -1,22 +1,22 @@
 ================================================================================
-                        STOFO TAG DASHBOARD
+                        STOFO DASHBOARD
                     Electron Application Documentation
 ================================================================================
 
 PROJECT OVERVIEW
 ================================================================================
-Stofo Tag Dashboard is a premium Windows desktop application built with 
-Electron that allows you to cleanly control your hardware tag display 
+StoFo Dashboard is a premium Windows desktop application built with 
+Electron that allows you to cleanly control your hardware display 
 via a background USB serial connection.
 
 The app dynamically processes GIF animations and beams them to your 
-Stofo Tag hardware. It features a state-of-the-art dark mode interface 
+StoFo hardware. It features a state-of-the-art dark mode interface 
 with ambient glassmorphism and runs seamlessly in the background (System Tray).
 
 KEY FEATURES:
 - Dynamic Library: Automatically detects any GIF added to the /gifs folder (supports .gif and .GIF).
 - Priority Sorting: Puts "Available" and "Busy" at the top, with others sorted alphabetically.
-- Automatic Sync: Instant detection of your Stofo Tag via USB.
+- Automatic Sync: Instant detection of your StoFo device via USB.
 - Auto-Revert Timers: Set active status to expire after 15m/30m/45m/1h.
 - Brightness Control: Command the hardware screen brightness directly from UI.
 - Background System Tray: Right-click quick toggles from your Windows taskbar.
@@ -36,7 +36,7 @@ STEP 2: Start the Application
   
   The dashboard window will open.
   
-STEP 3: Connect Hardware Tag
+STEP 3: Connect Hardware Module
   - Connect your device via USB cable.
   - The app will detect it automatically and update the "Connection" badge.
   
@@ -105,16 +105,17 @@ Hardware Screen is Dark:
   → Check the Brightness slider in the left sidebar.
   
 GIFs not showing up:
-  → Ensure they are in the /gifs folder and have a .gif or .GIF extension.
+  → Ensure them are in the /gifs folder and have a .gif or .GIF extension.
   → Restart the app to refresh the dynamic scan.
 
 ================================================================================
 VERSION INFORMATION
 ================================================================================
-App: Stofo Tag Dashboard
+App: StoFo Dashboard
 Version: 0.1.1
-UI Design: Stofo Premium v2
+UI Design: StoFo Premium v2
 Compatibility: Windows 7, 10, 11
 ================================================================================
 END OF DOCUMENTATION
 ================================================================================
+© 2026 StoFo Technologies. All rights reserved.

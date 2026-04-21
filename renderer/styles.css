@@ -83,8 +83,20 @@ body.light-mode {
 
 .sidebar-footer {
   margin-top: auto;
-  padding-top: 24px;
+  padding: 24px 0 0 0; /* Remove side padding to give text more room */
   border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.copyright {
+  font-size: 0.68rem; /* Slightly smaller to guarantee a single line on 300px sidebar */
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.4;
+  opacity: 0.6;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .main-content {
