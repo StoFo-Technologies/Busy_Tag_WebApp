@@ -5,7 +5,7 @@ const fs = require('fs');
 const { SerialMonitor } = require('../services/serialService');
 
 // Use a dedicated userData path for this app to avoid locked cache locations
-const dedicatedUserData = path.join(app.getPath('userData'), 'StofoTag');
+const dedicatedUserData = path.join(app.getPath('userData'), 'StatusTag');
 if (!fs.existsSync(dedicatedUserData)) {
   fs.mkdirSync(dedicatedUserData, { recursive: true });
 }
@@ -26,11 +26,7 @@ process.stderr.write = (chunk, encoding, callback) => {
   return originalStderrWrite(chunk, encoding, callback);
 };
 
-app.commandLine.appendSwitch('disable-gpu');
-app.commandLine.appendSwitch('disable-gpu-shader-disk-cache');
-app.commandLine.appendSwitch('disable-gpu-program-cache');
-app.commandLine.appendSwitch('disable-features', 'GpuCache');
-app.disableHardwareAcceleration();
+// Hardware acceleration is enabled for crisp text and UI rendering
 
 let mainWindow;
 let monitor;
@@ -41,6 +37,11 @@ function createWindow() {
     height: 720,
     minWidth: 900,
     minHeight: 620,
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: '#090c10',
+      symbolColor: '#ffffff'
+    },
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -60,12 +61,7 @@ function createWindow() {
 
   mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
 
-  mainWindow.on('close', (event) => {
-    if (!app.isQuitting) {
-      event.preventDefault();
-      mainWindow.hide();
-    }
-  });
+  // Removed custom 'close' handler to allow app to act like normal app (shows in taskbar and quits when closed)
 }
 
 function notify(title, body) {
@@ -79,10 +75,10 @@ app.whenReady().then(() => {
   monitor = new SerialMonitor({
     onConnect: (portInfo) => {
       mainWindow.webContents.send('device-status', { connected: true, port: portInfo.path });
-      notify('Device Connected', 'StoFo device connected via USB: ' + portInfo.path);
+      notify('Device Connected', 'Status device connected via USB: ' + portInfo.path);
     }, onDisconnect: (portInfo) => {
       mainWindow.webContents.send('device-status', { connected: false, port: null });
-      notify('Device Disconnected', 'StoFo device disconnected');
+      notify('Device Disconnected', 'Status device disconnected');
     }, onError: (errorMessage) => {
       mainWindow.webContents.send('device-error', errorMessage);
     }
@@ -90,8 +86,42 @@ app.whenReady().then(() => {
 
   monitor.start();
 
+  let revertTimeout = null;
+
   ipcMain.handle('send-status', async (event, status) => {
+    if (revertTimeout) {
+      clearTimeout(revertTimeout);
+      revertTimeout = null;
+    }
     return monitor.sendStatus(status);
+  });
+
+  ipcMain.handle('set-titlebar-theme', async (event, isLight) => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.setTitleBarOverlay({
+        color: isLight ? '#f3f4f6' : '#090c10',
+        symbolColor: isLight ? '#161a23' : '#ffffff'
+      });
+    }
+  });
+
+  ipcMain.handle('set-auto-revert', async (event, { durationMins, revertKey }) => {
+    if (revertTimeout) {
+      clearTimeout(revertTimeout);
+      revertTimeout = null;
+    }
+    if (durationMins > 0) {
+      revertTimeout = setTimeout(async () => {
+        try {
+          await monitor.sendStatus(revertKey);
+          if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.webContents.send('auto-reverted', revertKey);
+          }
+        } catch (e) {
+          console.error('Auto-revert error:', e);
+        }
+      }, durationMins * 60 * 1000);
+    }
   });
 
 
@@ -100,49 +130,78 @@ app.whenReady().then(() => {
     return monitor.setBrightness(val);
   });
 
+  ipcMain.handle('reset-display', async () => {
+    return monitor.resetDisplay();
+  });
+
+  ipcMain.handle('get-device-status', async () => {
+    return { connected: !!monitor.currentPort, port: monitor.currentPort };
+  });
+
   ipcMain.handle('get-gifs', async () => {
     const fs = require('fs');
-    const gifsDir = path.join(__dirname, '../gifs');
+    const designsDir = path.join(__dirname, '../designs');
     try {
-      const files = fs.readdirSync(gifsDir);
-      const gifList = files
-        .filter(f => f.toLowerCase().endsWith('.gif') && f.toLowerCase() !== 'berightback.gif')
-        .map(f => {
-          const name = f.replace(/\.gif$/i, '');
+      const mediaList = [];
+      const subdirs = ['gifs', 'images', 'cartoons'];
+      
+      for (const subdir of subdirs) {
+        const dir = path.join(designsDir, subdir);
+        if (!fs.existsSync(dir)) continue;
+        
+        const files = fs.readdirSync(dir);
+        files.forEach(f => {
+          const ext = path.extname(f).toLowerCase();
+          if (!['.gif', '.png', '.jpg', '.jpeg', '.webp'].includes(ext) || f.toLowerCase() === 'berightback.gif') return;
+          
+          const name = path.basename(f, ext);
 
           const LABEL_OVERRIDES = {
             'chillout': 'Time To Chill',
             'beback': 'Back Soon',
-            'available': 'Online & Available',
-            'busy': 'Busy / Working',
+            'available': 'Available',
+            'busy': 'Busy',
             'seeyaa': 'See Ya!',
             'snacktime': 'Snack Break',
             'donotdisturb': 'Do Not Disturb'
           };
 
-          let label = LABEL_OVERRIDES[name.toLowerCase()] || name
-            .replace(/([A-Z])/g, ' $1')
-            .replace(/[_-]/g, ' ')
-            .trim();
-          label = label.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+          let label;
+          if (subdir === 'cartoons') {
+            // Use generic labels for cartoons to avoid displaying original filenames
+            label = 'Cartoon';
+          } else {
+            label = LABEL_OVERRIDES[name.toLowerCase()] || name
+              .replace(/([A-Z])/g, ' $1')
+              .replace(/[_-]/g, ' ')
+              .trim();
+            label = label.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+          }
 
-          return {
-            key: name,
+          let type = 'gif';
+          if (subdir === 'images') type = 'image';
+          if (subdir === 'cartoons') type = 'cartoon';
+
+          mediaList.push({
+            key: f,
+            nameKey: name.toLowerCase(),
             label: label,
-            gif: `../gifs/${f}`
-          };
+            src: `../designs/${subdir}/${f}`,
+            type: type
+          });
         });
+      }
 
       // Sort alphabetically
-      gifList.sort((a, b) => a.label.localeCompare(b.label));
+      mediaList.sort((a, b) => a.label.localeCompare(b.label));
 
       // Re-order to put Available and Busy at the top
       const priority = ['available', 'busy'];
       const prioritized = [];
       const others = [];
 
-      gifList.forEach(item => {
-        if (priority.includes(item.key.toLowerCase())) {
+      mediaList.forEach(item => {
+        if (priority.includes(item.nameKey)) {
           prioritized.push(item);
         } else {
           others.push(item);
@@ -150,11 +209,11 @@ app.whenReady().then(() => {
       });
 
       // Special sort for priority
-      prioritized.sort((a, b) => priority.indexOf(a.key) - priority.indexOf(b.key));
+      prioritized.sort((a, b) => priority.indexOf(a.nameKey) - priority.indexOf(b.nameKey));
 
       return [...prioritized, ...others];
     } catch (e) {
-      console.error('Failed to read gifs dir:', e);
+      console.error('Failed to read designs dir:', e);
       return [];
     }
   });
@@ -165,21 +224,6 @@ app.whenReady().then(() => {
     }
   });
 
-  let trayIconPath = path.join(__dirname, '../public/STOFO LOGO.png');
-  let tray = new Tray(trayIconPath);
-  const contextMenu = Menu.buildFromTemplate([
-    { label: 'Open Dashboard', click: () => { mainWindow.show(); } },
-    { type: 'separator' },
-    { label: 'Set: Available', click: () => { monitor.sendStatus('available').catch(e => notify('Error', 'Ensure tag is connected')); } },
-    { label: 'Set: Busy', click: () => { monitor.sendStatus('busy').catch(e => notify('Error', 'Ensure tag is connected')); } },
-    { type: 'separator' },
-    { label: 'Quit App', click: () => { app.isQuitting = true; app.quit(); } }
-  ]);
-  tray.setToolTip('StoFo Dashboard');
-  tray.setContextMenu(contextMenu);
-  tray.on('click', () => {
-    mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
-  });
 });
 
 app.on('window-all-closed', () => {

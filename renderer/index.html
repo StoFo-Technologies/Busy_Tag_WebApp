@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' file: data: *;">
-  <title>StoFo Dashboard | Animate Your Presence</title>
+  <title>Status Tag</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 
@@ -16,9 +16,9 @@
 
     <aside class="sidebar">
       <div class="sidebar-header"
-        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
-        <img src="../public/STOFO LOGO.png" alt="STOFO Logo" class="brand-logo" />
-        <div class="theme-toggle">
+        style="-webkit-app-region: drag; display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div class="brand-text">STATUS TAG</div>
+        <div class="theme-toggle" style="-webkit-app-region: no-drag;">
           <input type="checkbox" class="checkbox" id="theme-checkbox">
           <label for="theme-checkbox" class="checkbox-label">
             <span class="ball"></span>
@@ -26,21 +26,59 @@
         </div>
       </div>
 
+      <div class="sidebar-divider"></div>
+
       <div class="sidebar-controls">
-          <div class="control-group">
+        <div class="connection-widget" id="connection-badge">
+          <div class="device-icon">
+            <div class="device-screen">
+              Status<br>Tag
+            </div>
+          </div>
+          <div class="connection-info">
+            <div class="connection-title">Connect Status Tag</div>
+            <div class="connection-status disconnected" id="badge-status-wrap">
+              <svg id="status-icon" viewBox="0 0 24 24" width="14" height="14" fill="#f85149">
+                <path
+                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.59 13.17L15.17 16.59 12 13.41 8.83 16.59 7.41 15.17 10.59 12 7.41 8.83 8.83 7.41 12 10.59 15.17 7.41 16.59 8.83 13.41 12l3.18 3.17z" />
+              </svg>
+              <span id="badge-text">No devices found</span>
+            </div>
+          </div>
+        </div>
+        <div class="control-group">
           <label for="timer-select">Auto-Revert Timer:</label>
-          <select id="timer-select">
-            <option value="0">Forever</option>
-            <option value="15">15 Minutes</option>
-            <option value="30">30 Minutes</option>
-            <option value="45">45 Minutes</option>
-            <option value="60">1 Hour</option>
-          </select>
+          <div class="custom-select" id="custom-timer-container">
+            <div class="custom-select-trigger" id="custom-timer-trigger">
+              <span id="custom-timer-label">Forever</span>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.6;"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            <div class="custom-options" id="custom-timer-options">
+              <div class="custom-option selected" data-value="0">Forever</div>
+              <div class="custom-option" data-value="1">1 Minute</div>
+              <div class="custom-option" data-value="15">15 Minutes</div>
+              <div class="custom-option" data-value="30">30 Minutes</div>
+              <div class="custom-option" data-value="45">45 Minutes</div>
+              <div class="custom-option" data-value="60">1 Hour</div>
+            </div>
+            <input type="hidden" id="timer-select" value="0">
+          </div>
         </div>
 
         <div class="control-group">
-          <label for="brightness-slider">Hardware Brightness:</label>
+          <label for="brightness-slider">Display Brightness:</label>
           <input type="range" id="brightness-slider" min="10" max="255" value="200" />
+        </div>
+
+        <div class="sidebar-actions-row" style="display: flex; gap: 8px; margin-top: 8px;">
+          <button id="reset-display-btn" class="reset-btn" style="margin-top: 0; flex: 1; padding: 10px 4px; font-size: 0.85rem;">Reset Display</button>
+          
+          <button id="help-btn" class="help-btn" style="flex: 1; padding: 10px 4px; font-size: 0.85rem;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" />
+            </svg>
+            Help
+          </button>
         </div>
 
 
@@ -52,28 +90,70 @@
     </aside>
 
     <main class="main-content">
-      <header class="page-header">
+      <header class="page-header" style="-webkit-app-region: drag;">
         <div class="header-container">
-          <div class="header-main">
+          <div class="header-main" style="-webkit-app-region: no-drag;">
             <div class="header-titles">
-              <h1>Your Status, Animated.</h1>
-              <p class="subtitle">Personalize your setup with dynamic presence cards.</p>
+              <h1 class="gradient-title">Designs</h1>
+              <p class="header-subtitle">Choose a dynamic presence for your tag</p>
             </div>
-            <div id="connection-badge" class="connection-badge disconnected">
-              <span class="dot"></span>
-              <span id="badge-text">Not connected</span>
-            </div>
-          </div>
 
-          <div id="operation-status" class="operation-status">
-            <span id="status-text"></span>
-            <div id="loading-spinner" class="spinner hidden"></div>
+            <div class="toggle-and-status-container" style="margin-right: auto; margin-left: 30px; display: flex; flex-direction: column; align-items: center;">
+              <div class="media-toggle">
+                <input type="radio" id="toggle-gif" name="media-type" value="gif" checked>
+                <label for="toggle-gif" class="toggle-btn">Animations</label>
+                <input type="radio" id="toggle-image" name="media-type" value="image">
+                <label for="toggle-image" class="toggle-btn">Images</label>
+                <input type="radio" id="toggle-cartoon" name="media-type" value="cartoon">
+                <label for="toggle-cartoon" class="toggle-btn">Cartoons</label>
+              </div>
+
+              <div id="operation-status" class="operation-status">
+                <span id="status-text"></span>
+                <div id="loading-spinner" class="spinner hidden"></div>
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
       <section class="card-grid" id="gif-grid"></section>
     </main>
+  </div>
+
+  <div id="reset-overlay" class="reset-overlay hidden">
+    <div class="overlay-content">
+      <img src="../public/STOFO LOGO.png" alt="StoFo Logo" class="large-logo" />
+      <div class="reset-message">SYSTEM RESET IN PROGRESS</div>
+      <div class="progress-bar-container">
+        <div class="progress-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="help-overlay" class="reset-overlay hidden">
+    <div class="overlay-content help-content">
+      <button id="close-help-btn" class="close-btn">&times;</button>
+      <h2>Status Tag Help</h2>
+      <div class="help-section">
+        <h3>How to use</h3>
+        <p>1. Connect your Status Tag via USB cable.</p>
+        <p>2. Select any design from the dashboard to send it directly to your tag.</p>
+        <p>3. Use the Auto-Revert timer to automatically switch back to "Available" after a set duration.</p>
+        <p>4. Use the <strong>RESET DISPLAY</strong> button in the left sidebar to quickly clear the screen and
+          interrupt any stuck animations.</p>
+      </div>
+      <div class="help-section">
+        <h3>Troubleshooting</h3>
+        <p><strong>Not connecting?</strong> Try a different USB cable (must support data transfer) or reconnect the
+          device.</p>
+      </div>
+      <div class="help-section">
+        <h3>Contact Support</h3>
+        <p><strong>Email:</strong> contact@stofo.in </p>
+        <p><strong>Phone:</strong> +91 9591306031</p>
+      </div>
+    </div>
   </div>
 
   <script src="renderer.js"></script>

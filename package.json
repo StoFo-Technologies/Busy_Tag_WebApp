@@ -1,7 +1,7 @@
 {
-  "name": "stofo-dashboard",
+  "name": "statustag",
   "version": "0.1.0",
-  "description": "Electron StoFo Dashboard for ESP32 TFT GIF control",
+  "description": "Electron Status Tag for ESP32 TFT GIF control",
   "main": "main/main.js",
   "scripts": {
     "start": "electron .",
@@ -21,15 +21,16 @@
     "gif-frames": "^1.0.1",
     "gifwrap": "^0.10.1",
     "jimp": "^0.22.10",
-    "serialport": "^13.0.0"
+    "serialport": "^13.0.0",
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
     "electron": "^41.1.1",
     "electron-builder": "^26.8.1"
   },
   "build": {
-    "appId": "com.stofotag",
-    "productName": "StoFo Dashboard",
+    "appId": "com.statustag",
+    "productName": "Status Tag",
     "directories": {
       "output": "dist"
     },
@@ -37,7 +38,7 @@
       "main/**/*",
       "renderer/**/*",
       "services/**/*",
-      "gifs/**/*",
+      "designs/**/*",
       "public/**/*",
       "build/**/*",
       "node_modules/**/*",
