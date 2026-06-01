@@ -86,6 +86,7 @@ body.light-mode {
   letter-spacing: 0.08em;
   background: linear-gradient(135deg, #a78bfa 0%, #3b82f6 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   margin: 0;
   filter: drop-shadow(0 2px 4px rgba(167, 139, 250, 0.2));
@@ -152,6 +153,7 @@ body.light-mode {
   letter-spacing: -0.03em;
   background: linear-gradient(135deg, #a78bfa 0%, #3b82f6 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
   filter: drop-shadow(0 2px 8px rgba(167, 139, 250, 0.2));
