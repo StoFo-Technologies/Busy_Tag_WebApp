@@ -19,7 +19,7 @@ Status Tag transforms GIF status images into RGB565 frames and delivers them to 
 - `main/` – Electron main process, IPC handlers, and Tray management.
 - `renderer/` – Dashboard UI (HTML/JS/CSS).
 - `services/` – `serialService.js` (Real-time frame processing and USB comms).
-- `designs/` – The media library. Just drop any `.gif`, `.png`, `.jpg`, or `.webp` file here to include it.
+- `designs/` – The media library containing subdirectories like `cartoons/` and `gifs/`. Just drop any `.gif`, `.png`, `.jpg`, or `.webp` file into these categorized folders to include them.
 - `DOCUMENTATION.txt` – Detailed project manual.
 
 ## Setup

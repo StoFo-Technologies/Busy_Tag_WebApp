@@ -14,7 +14,7 @@ Status hardware. It features a state-of-the-art dark mode interface
 with ambient glassmorphism and runs seamlessly in the background (System Tray).
 
 KEY FEATURES:
-- Media Library: Processes the bundled designs located in the embedded /designs folder (supports .gif, .png, .jpg, .webp).
+- Media Library: Processes the bundled designs categorized in subfolders (e.g. /cartoons, /gifs) within the embedded /designs folder (supports .gif, .png, .jpg, .webp).
 - Priority Sorting: Puts "Available" and "Busy" at the top, with others sorted alphabetically.
 - Automatic Sync: Instant detection of your Status device via USB.
 - Boot Logo: The StoFo Logo automatically displays upon device connection.
@@ -60,7 +60,7 @@ renderer/
 services/
   └─ serialService.js → USB communications and real-time frame processing
 
-designs/              → Your bundled media asset library.
+designs/              → Your bundled media asset library (organized into /cartoons and /gifs).
 
 package.json          → Project configuration and scripts
 
