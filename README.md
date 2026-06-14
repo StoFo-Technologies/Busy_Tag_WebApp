@@ -46,6 +46,25 @@ Status Tag transforms animated and static images into RGB565 frames and delivers
 | `npm run build-win` | Package the app into a Windows installer (`/dist`) |
 | `npm run dist` | Full release pipeline for Windows systems |
 
+### Versioning & Releases
+
+To quickly bump the version of the application before building a release:
+
+- **For small bug fixes:** (Changes `0.1.0` to `0.1.1`)
+  ```bash
+  npm version patch
+  ```
+- **For new features:** (Changes `0.1.0` to `0.2.0`)
+  ```bash
+  npm version minor
+  ```
+- **For huge overhauls:** (Changes `0.1.0` to `1.0.0`)
+  ```bash
+  npm version major
+  ```
+
+Once you run the command, it updates `package.json` for you. Then you just run `npm run dist` to create your updated `.exe`!
+
 ## Troubleshooting
 
 - **Device not detected**: Ensure the USB cable is data-capable. Verify Windows Device Manager shows a COM port for the device.
