@@ -12,6 +12,7 @@ const toggleGif = document.getElementById('toggle-gif');
 const toggleImage = document.getElementById('toggle-image');
 let currentFilter = 'gif';
 let activeStatusKey = null;
+let latestSendToken = 0;
 
 function createCard({ key, label, src, type }) {
   const card = document.createElement('article');
@@ -35,11 +36,14 @@ function createCard({ key, label, src, type }) {
 
   card.addEventListener('click', async () => {
     if (card.classList.contains('sending')) return; // debounce
+    const sendToken = ++latestSendToken;
     card.classList.add('sending');
+    setSelectedCard(key);
     setOperationStatus(`Sending "${label}" to device...`, 'primary', true);
     try {
       const r = await window.statustag.sendStatus(key);
-      setSelectedCard(key); // only mark success
+      if (sendToken !== latestSendToken) return;
+      setSelectedCard(key);
       setOperationStatus(`Displayed "${label}"`, 'success');
 
       const durationStr = timerSelect.value;
@@ -61,6 +65,7 @@ function createCard({ key, label, src, type }) {
         window.statustag.setAutoRevert({ durationMins, revertKey }).catch(() => { });
       }
     } catch (err) {
+      if (sendToken !== latestSendToken) return;
       let errorMsg = err.message || 'Unknown error';
       if (errorMsg.toLowerCase().includes('cancelled by new selection')) {
         setOperationStatus('');

@@ -121,6 +121,10 @@ class SerialMonitor {
     if (this.currentAbort && !this.currentAbort.aborted) {
       this.currentAbort.aborted = true;
     }
+
+    // Stop any in-flight upload immediately so a partial older design cannot
+    // continue streaming into the next selected design.
+    this.closePort();
   }
 
   _throwIfAborted() {
