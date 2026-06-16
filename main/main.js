@@ -1,5 +1,5 @@
 process.noDeprecation = true;
-const { app, BrowserWindow, Notification, ipcMain, Tray, Menu, dialog } = require('electron');
+const { app, BrowserWindow, Notification, ipcMain, Menu } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { SerialMonitor } = require('../services/serialService');
@@ -60,8 +60,6 @@ function createWindow() {
   });
 
   mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
-
-  // Removed custom 'close' handler to allow app to act like normal app (shows in taskbar and quits when closed)
 }
 
 function notify(title, body) {
@@ -152,9 +150,11 @@ app.whenReady().then(() => {
         const files = fs.readdirSync(dir);
         files.forEach(f => {
           const ext = path.extname(f).toLowerCase();
-          if (!['.gif', '.png', '.jpg', '.jpeg', '.webp'].includes(ext) || f.toLowerCase() === 'berightback.gif') return;
+          if (!['.gif', '.png', '.jpg', '.jpeg', '.webp'].includes(ext) || f.toLowerCase() === 'berightback_cartoon.gif') return;
           
           const name = path.basename(f, ext);
+          // Strip the type suffix (_Cartoon, _Gif, _Image) for label generation
+          const baseName = name.replace(/_(Cartoon|Gif|Image)$/i, '');
 
           const LABEL_OVERRIDES = {
             'chillout': 'Time To Chill',
@@ -171,7 +171,7 @@ app.whenReady().then(() => {
             // Use generic labels for cartoons to avoid displaying original filenames
             label = 'Cartoon';
           } else {
-            label = LABEL_OVERRIDES[name.toLowerCase()] || name
+            label = LABEL_OVERRIDES[baseName.toLowerCase()] || baseName
               .replace(/([A-Z])/g, ' $1')
               .replace(/[_-]/g, ' ')
               .trim();
@@ -184,7 +184,7 @@ app.whenReady().then(() => {
 
           mediaList.push({
             key: f,
-            nameKey: name.toLowerCase(),
+            nameKey: baseName.toLowerCase(),
             label: label,
             src: `../designs/${subdir}/${f}`,
             type: type
@@ -215,12 +215,6 @@ app.whenReady().then(() => {
     } catch (e) {
       console.error('Failed to read designs dir:', e);
       return [];
-    }
-  });
-
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
     }
   });
 

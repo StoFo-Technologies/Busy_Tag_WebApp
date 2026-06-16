@@ -11,7 +11,7 @@ via a background USB serial connection.
 
 The app dynamically processes GIF animations and beams them to your 
 Status hardware. It features a state-of-the-art dark mode interface 
-with ambient glassmorphism and runs seamlessly in the background (System Tray).
+with ambient glassmorphism.
 
 KEY FEATURES:
 - Media Library: Processes the bundled designs categorized in subfolders (e.g. /cartoons, /gifs) within the embedded /designs folder (supports .gif, .png, .jpg, .webp).
@@ -20,7 +20,6 @@ KEY FEATURES:
 - Boot Logo: The StoFo Logo automatically displays upon device connection.
 - Auto-Revert Timers: Set active status to expire after 15m/30m/45m/1h.
 - Brightness Control: Command the hardware screen brightness directly from UI.
-- Background System Tray: Right-click quick toggles from your Windows taskbar.
 - Real-time Notifications: Desktop alerts for connection status and actions.
 
 ================================================================================
@@ -49,7 +48,7 @@ PROJECT STRUCTURE
 ================================================================================
 
 main/
-  ├─ main.js          → Main Electron process (Tray, IPC, GIF scanning)
+  ├─ main.js          → Main Electron process (IPC, GIF scanning)
   └─ preload.js       → Secure API bridge
 
 renderer/

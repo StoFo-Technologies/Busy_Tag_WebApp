@@ -45,16 +45,17 @@ function createCard({ key, label, src, type }) {
       const durationStr = timerSelect.value;
       const durationMins = parseInt(durationStr, 10);
       if (durationMins > 0) {
-        const ext = key.split('.').pop().toLowerCase();
+        const statusItem = statuses.find(s => s.key === key);
+        const type = statusItem ? statusItem.type : 'gif';
 
         let revertKey;
 
-        if (ext === 'webp') {
-          revertKey = 'free.webp';
-        } else if (ext === 'png' || ext === 'jpg') {
-          revertKey = 'available.png';
+        if (type === 'cartoon') {
+          revertKey = 'Free_Cartoon.webp';
+        } else if (type === 'image') {
+          revertKey = 'available_Image.png';
         } else {
-          revertKey = 'Available.gif';
+          revertKey = 'Available_Gif.gif';
         }
 
         window.statustag.setAutoRevert({ durationMins, revertKey }).catch(() => { });
@@ -193,16 +194,17 @@ if (timerSelect) {
 
     const durationMins = parseInt(timerSelect.value, 10);
     if (durationMins > 0) {
-      const ext = activeStatusKey.split('.').pop().toLowerCase();
+      const statusItem = statuses.find(s => s.key === activeStatusKey);
+      const type = statusItem ? statusItem.type : 'gif';
 
       let revertKey;
 
-      if (ext === 'webp') {
-        revertKey = 'free.webp';
-      } else if (ext === 'png' || ext === 'jpg') {
-        revertKey = 'available.png';
+      if (type === 'cartoon') {
+        revertKey = 'Free_Cartoon.webp';
+      } else if (type === 'image') {
+        revertKey = 'available_Image.png';
       } else {
-        revertKey = 'Available.gif';
+        revertKey = 'Available_Gif.gif';
       }
 
       window.statustag.setAutoRevert({ durationMins, revertKey }).catch(() => { });
